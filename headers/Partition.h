@@ -26,8 +26,8 @@ typedef struct BootSector
     __uint8_t reserved[12];
 } __attribute__ ((packed)) BootSector;
 
-BootSector* BootSector_new(FILE* file, int offset);
-void BootSector_init(BootSector* self, FILE* file, int offset);
+BootSector* BootSector_new(FILE* file, int* offset);
+void BootSector_init(BootSector* self, FILE* file, int* offset);
 void BootSector_print(BootSector* self);
 void BootSector_destroy(BootSector* self);
 
@@ -43,8 +43,8 @@ typedef struct FSInfo
     __uint32_t signature3;
 } __attribute__ ((packed)) FSInfo;
 
-FSInfo* FSInfo_new(FILE* file, int offset);
-void FSInfo_init(FSInfo* self, FILE* file, int offset);
+FSInfo* FSInfo_new(FILE* file, int* offset);
+void FSInfo_init(FSInfo* self, FILE* file, int* offset);
 void FSInfo_print(FSInfo* self);
 void FSInfo_destroy(FSInfo* self);
 
@@ -54,8 +54,8 @@ typedef struct ReservedSectors
     FSInfo* fsInfo;
 } __attribute__ ((packed)) ReservedSectors;
 
-ReservedSectors* ReservedSectors_new(FILE* file, int offset);
-void ReservedSectors_init(ReservedSectors* self, FILE* file, int offset);
+ReservedSectors* ReservedSectors_new(FILE* file, int* offset);
+void ReservedSectors_init(ReservedSectors* self, FILE* file, int* offset);
 void ReservedSectors_print(ReservedSectors* self);
 void ReservedSectors_destroy(ReservedSectors* self);
 
@@ -78,6 +78,6 @@ typedef struct Partition
 
 } __attribute__ ((packed)) Partition;
 
-Partition* Partition_new(FILE* file, int offset);
-void Partition_init(Partition* self, FILE* file, int offset);
+Partition* Partition_new(FILE* file, int* offset);
+void Partition_init(Partition* self, FILE* file, int* offset);
 void Partition_print(Partition* self);

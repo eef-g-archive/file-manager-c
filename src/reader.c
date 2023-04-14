@@ -11,17 +11,20 @@ void Reader_init(Reader* self, FILE* filename)
 {
     self->file = filename;
     self->mbr = MBR_new(filename);
-    self->offset += 512;
     for (int i = 0; i < 4; i++) {
+        self->offset = self->mbr->partitionEntry[i].LBAFirstSector * 512;
         self->partitions[i] = Partition_new(filename, self->offset);
     }
-    self->offset = 0;
 }
 
 void Reader_print(Reader* self)
 {
     MBR_print(self->mbr);
     for (int i = 0; i < 4; i++) {
-        Partition_print(self->partitions[i]);
+        printf("\n\n\t-=| Partition %d |=-\n", i + 1);
+        if(self->mbr->partitionEntry[i].type == 0x00)
+            printf("Inactive partition\n");
+        else
+            Partition_print(self->partitions[i]);
     }
 }

@@ -1,4 +1,5 @@
 #include "../headers/MBR.h"
+#include "../headers/utility.h"
 
 MBR* MBR_new(FILE* file) {
     MBR* self = (MBR*) malloc(sizeof(MBR));

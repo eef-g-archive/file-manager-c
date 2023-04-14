@@ -13,9 +13,9 @@ typedef struct PartitionEntry
 } __attribute__ ((packed)) PartitionEntry;
 
 typedef struct MBR {
-    unsigned char bootCode[446];
+    __uint8_t bootCode[446];
     PartitionEntry partitionEntry[4];
-    unsigned short signature;
+    __uint16_t signature;
 } MBR;
 
 

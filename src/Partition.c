@@ -3,23 +3,27 @@
 
 #pragma region ReservedSectors Functions
 
-ReservedSectors* ReservedSectors_new(FILE* file, int* offset)
+ReservedSectors* ReservedSectors_new(FILE* file, int* offset, int isFAT32)
 {
     ReservedSectors* self = (ReservedSectors*) malloc(sizeof(ReservedSectors));
-    ReservedSectors_init(self, file, offset);
+    ReservedSectors_init(self, file, offset, isFAT32);
     return self;
 }
 
-void ReservedSectors_init(ReservedSectors* self, FILE* file, int* offset)
+void ReservedSectors_init(ReservedSectors* self, FILE* file, int* offset, int isFAT32)
 {
     self->boot = BootSector_new(file, offset);
-    //self->fsInfo = FSInfo_new(file);
+    if(isFAT32 == 1)
+        self->fsInfo = FSInfo_new(file, offset);
+    else
+        self->fsInfo = NULL;
 }
 
 void ReservedSectors_print(ReservedSectors* self)
 {
     BootSector_print(self->boot);
-    //FS_print(self->fsInfo);
+    if(self->fsInfo != NULL)
+        FSInfo_print(self->fsInfo);
 }
 
 void ReservedSectors_destroy(ReservedSectors* self)
@@ -105,13 +109,14 @@ void FSInfo_init(FSInfo* self, FILE* file, int* offset)
     fread(&self->signature3, 4, 1, file);
 }
 
-void FS_print(FSInfo* self)
+void FSInfo_print(FSInfo* self)
 {
-    printf("Signature: %d", self->signature);
-    printf("Signature2: %d", self->signature2);
-    printf("Free cluster count: %d", self->freeClusterCount);
-    printf("Next free cluster: %d", self->nextFreeCluster);
-    printf("Signature3: %d", self->signature3);
+    printf("\n-= FS Info =-\n");
+    printf("Signature: 0x%X\n", self->signature);
+    printf("Signature2: 0x%X\n", self->signature2);
+    printf("Free cluster count: 0x%X\n", self->freeClusterCount);
+    printf("Next free cluster: 0x%X\n", self->nextFreeCluster);
+    printf("Signature3: 0x%X\n", self->signature3);
 }
 
 void FSInfo_destroy(FSInfo* self)
@@ -125,16 +130,16 @@ void FSInfo_destroy(FSInfo* self)
 
 
 
-Partition* Partition_new(FILE* file, int* offset)
+Partition* Partition_new(FILE* file, int* offset, int isFAT32)
 {
     Partition* self = (Partition*) malloc(sizeof(Partition));
-    Partition_init(self, file, offset);
+    Partition_init(self, file, offset, isFAT32);
     return self;
 }
 
-void Partition_init(Partition* self, FILE* file, int* offset)
+void Partition_init(Partition* self, FILE* file, int* offset, int isFAT32)
 {
-    self->reserved = ReservedSectors_new(file, offset);
+    self->reserved = ReservedSectors_new(file, offset, isFAT32);
 }
 
 void Partition_print(Partition* self)

@@ -54,8 +54,8 @@ typedef struct ReservedSectors
     FSInfo* fsInfo;
 } __attribute__ ((packed)) ReservedSectors;
 
-ReservedSectors* ReservedSectors_new(FILE* file, int* offset);
-void ReservedSectors_init(ReservedSectors* self, FILE* file, int* offset);
+ReservedSectors* ReservedSectors_new(FILE* file, int* offset, int isFAT32);
+void ReservedSectors_init(ReservedSectors* self, FILE* file, int* offset, int isFAT32);
 void ReservedSectors_print(ReservedSectors* self);
 void ReservedSectors_destroy(ReservedSectors* self);
 
@@ -78,6 +78,6 @@ typedef struct Partition
 
 } __attribute__ ((packed)) Partition;
 
-Partition* Partition_new(FILE* file, int* offset);
-void Partition_init(Partition* self, FILE* file, int* offset);
+Partition* Partition_new(FILE* file, int* offset, int isFAT32);
+void Partition_init(Partition* self, FILE* file, int* offset, int isFAT32);
 void Partition_print(Partition* self);

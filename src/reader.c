@@ -13,7 +13,10 @@ void Reader_init(Reader* self, FILE* filename)
     self->mbr = MBR_new(filename);
     for (int i = 0; i < 4; i++) {
         self->offset = self->mbr->partitionEntry[i].LBAFirstSector * 512;
-        self->partitions[i] = Partition_new(filename, self->offset);
+        if(self->mbr->partitionEntry[i].type != 0x0c)
+            self->partitions[i] = Partition_new(filename, self->offset, 1);
+        else
+            self->partitions[i] = Partition_new(filename, self->offset, 0);
     }
 }
 

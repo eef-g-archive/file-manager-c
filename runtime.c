@@ -1,4 +1,4 @@
-#include "headers/MBR.h"
+#include "headers/reader.h"
 
 int main(int argc, char* argv[])
 {
@@ -9,8 +9,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     FILE* file = fopen(argv[1], "rb");
-    MBR* mbr = MBR_new(file);
-    MBR_print(mbr);
-    MBR_destroy(mbr);
+    Reader* reader = Reader_new(file);
+    Reader_print(reader);
     return 0;   
 }

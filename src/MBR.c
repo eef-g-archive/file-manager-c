@@ -1,4 +1,5 @@
 #include "../headers/MBR.h"
+
 MBR* MBR_new(FILE* file) {
     MBR* self = (MBR*) malloc(sizeof(MBR));
     MBR_init(self, file);
@@ -12,7 +13,6 @@ void MBR_init(MBR* self, FILE* file) {
         _readPartition(&self->partitionEntry[i], file);
     }
     fread(&self->signature, 2, 1, file);
-    fclose(file);
 }
 
 void MBR_destroy(MBR* self) {
@@ -20,28 +20,20 @@ void MBR_destroy(MBR* self) {
 }
 
 
-// TODO:
-/*
-    1. Change the "Type" to a switch case to print out the name of the drive type
-    2. Change the "Status" to a switch case to print out the name of the status
-    3. Change the LBA FIrst Sector & Sectors Count to print out in Hex & multiply by 512 to make it worth
-*/
-
 void MBR_print(MBR* self)
 {
-    printf("Boot Code: ");
-    for (int i = 0; i < 446; i++) {
-        printf("%02x ", self->bootCode[i]);
-    }
-    printf("\n");
+    // printf("Boot Code: ");
+    // for (int i = 0; i < 446; i++) {
+    //     printf("%02x ", self->bootCode[i]);
+    // }
     for (int i = 0; i < 4; i++) {
         printf("Partition %d:\n", i + 1);
-        printf("\tStatus: %02x\n", self->partitionEntry[i].status);
-        printf("\tCHS First Sector: %02x %02x %02x\n", self->partitionEntry[i].CHSFirstSector[0], self->partitionEntry[i].CHSFirstSector[1], self->partitionEntry[i].CHSFirstSector[2]);
-        printf("\tType: %02x\n", self->partitionEntry[i].type);
-        printf("\tCHS Last Sector: %02x %02x %02x\n", self->partitionEntry[i].CHSLastSector[0], self->partitionEntry[i].CHSLastSector[1], self->partitionEntry[i].CHSLastSector[2]);
-        printf("\tLBA First Sector: %X\n", self->partitionEntry[i].LBAFirstSector * 512);
-        printf("\tSectors Count: %X\n", self->partitionEntry[i].sectorsCount);
+        _printStatus(self->partitionEntry[i]);
+        printf("\tCHS First Sector: 0x%X%X%X\n", self->partitionEntry[i].CHSFirstSector[0], self->partitionEntry[i].CHSFirstSector[1], self->partitionEntry[i].CHSFirstSector[2]);
+        _printType(self->partitionEntry[i]);
+        printf("\tCHS Last Sector: 0x%X%X%X\n", self->partitionEntry[i].CHSLastSector[0], self->partitionEntry[i].CHSLastSector[1], self->partitionEntry[i].CHSLastSector[2]);
+        printf("\tLBA First Sector: 0x%04X\n", self->partitionEntry[i].LBAFirstSector);
+        printf("\tSectors Count: 0x%04X\n", self->partitionEntry[i].sectorsCount);
     }
     printf("Signature: %04x\n", self->signature);
 }
@@ -56,3 +48,97 @@ void _readPartition(PartitionEntry* partition, FILE* file) {
     fread(&partition->LBAFirstSector, 4, 1, file);
     fread(&partition->sectorsCount, 4, 1, file);
 }
+
+void _printStatus(PartitionEntry entry)
+{
+    printf("\tStatus: ");
+
+    #pragma region Status
+    switch(entry.status)
+    {
+        case 0x00:
+        {
+            printf("Inactive");
+            break;
+        }
+        case 0x80:
+        {
+            printf("Active");
+            break;
+        }
+        default:
+        {
+            printf("Unknown");
+            break;
+        }
+    }
+    #pragma endregion
+    
+    printf("\n");
+}
+
+void _printType(PartitionEntry entry)
+{
+    printf("\tType: ");
+
+    #pragma region TypeCodes
+    
+    switch(entry.type)
+    {
+        case 0x00:
+        {
+            printf("Empty");
+            break;
+        }
+        case 0x01:
+        {
+            printf("FAT12");
+            break;
+        }
+        case 0x04:
+        {
+            printf("FAT16");
+            break;
+        }
+        case 0x06:
+        {
+            printf("FAT16");
+            break;
+        }
+        case 0x0b:
+        {
+            printf("FAT32");
+            break;
+        }
+        case 0x0e:
+        {
+            printf("FAT16 LBA");
+            break;
+        }
+        case 0x0c:
+        {
+            printf("FAT32 LBA");
+            break;
+        }
+        case 0x07:
+        {
+            printf("NTFS");
+            break;
+        }
+        case 0x83:
+        {
+            printf("Linux");
+            break;
+        }
+        default:
+        {
+            printf("Unknown");
+            break;
+        }
+    }
+
+    #pragma endregion
+    
+    printf("\n");
+}
+

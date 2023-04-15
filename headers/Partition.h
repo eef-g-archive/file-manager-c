@@ -1,29 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #pragma region Resersved Sector Structs
 
 typedef struct BootSector
 {
-    __uint16_t bytesPerSector;
-    __uint8_t sectorsPerCluster;
-    __uint16_t reservedSectors;
-    __uint8_t fatCopies;
-    __uint16_t rootEntries;
-    __uint16_t totalSectors;
-    __uint8_t mediaDescriptor;
-    __uint16_t sectorsPerFAT;
-    __uint16_t sectorsPerHead;
-    __uint16_t headsPerCylinder;
-    __uint32_t hiddenSectors;
-    __uint32_t bigNumberofSectors;
-    __uint32_t bigNumberSectorsPerFAT32;
-    __uint16_t flags;
-    __uint16_t version;
-    __uint32_t rootCluster;
-    __uint16_t fsInfoSector;
-    __uint16_t backupBootSector;
-    __uint8_t reserved[12];
+    uint16_t bytesPerSector;
+    uint8_t sectorsPerCluster;
+    uint16_t reservedSectors;
+    uint8_t fatCopies;
+    uint16_t rootEntries;
+    uint16_t totalSectors;
+    uint8_t mediaDescriptor;
+    uint16_t sectorsPerFAT;
+    uint16_t sectorsPerHead;
+    uint16_t headsPerCylinder;
+    uint32_t hiddenSectors;
+    uint32_t bigNumberofSectors;
+    uint32_t bigNumberSectorsPerFAT32;
+    uint16_t flags;
+    uint16_t version;
+    uint32_t rootCluster;
+    uint16_t fsInfoSector;
+    uint16_t backupBootSector;
+    uint8_t reserved[12];
 } __attribute__ ((packed)) BootSector;
 
 BootSector* BootSector_new(FILE* file, int* offset);
@@ -34,13 +35,13 @@ void BootSector_destroy(BootSector* self);
 // This is only used for FAT32
 typedef struct FSInfo
 {
-    __uint32_t signature;
-    __uint8_t reserved[480];
-    __uint32_t signature2;
-    __uint32_t freeClusterCount;
-    __uint32_t nextFreeCluster;
-    __uint8_t reserved2[12];
-    __uint32_t signature3;
+    uint32_t signature;
+    uint8_t reserved[480];
+    uint32_t signature2;
+    uint32_t freeClusterCount;
+    uint32_t nextFreeCluster;
+    uint8_t reserved2[12];
+    uint32_t signature3;
 } __attribute__ ((packed)) FSInfo;
 
 FSInfo* FSInfo_new(FILE* file, int* offset);

@@ -1,21 +1,21 @@
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <inttypes.h>
 
 typedef struct PartitionEntry
 {
-    __uint8_t status;
-    __uint8_t CHSFirstSector[3];
-    __uint8_t type;
-    __uint8_t CHSLastSector[3];
-    __uint64_t LBAFirstSector;
-    __uint64_t sectorsCount
+    uint8_t status;
+    uint8_t CHSFirstSector[3];
+    uint8_t type;
+    uint8_t CHSLastSector[3];
+    uint64_t LBAFirstSector;
+    uint64_t sectorsCount
 } __attribute__ ((packed)) PartitionEntry;
 
 typedef struct MBR {
-    __uint8_t bootCode[446];
+    uint8_t bootCode[446];
     PartitionEntry partitionEntry[4];
-    __uint16_t signature;
+    uint16_t signature;
 } MBR;
 
 

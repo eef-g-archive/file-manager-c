@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "Partition.h"
 #include "MBR.h"
 

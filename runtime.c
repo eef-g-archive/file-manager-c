@@ -2,6 +2,7 @@
 
 int main(int argc, char* argv[])
 {
+    printf("This is a test");
     printf("Usage: %s <img file>\n", argv[0]);
     if(argc < 2)
     {

@@ -54,7 +54,6 @@ void _printStatus(PartitionEntry entry)
 {
     printf("\tStatus: ");
 
-    #pragma region Status
     switch(entry.status)
     {
         case 0x00:
@@ -73,7 +72,6 @@ void _printStatus(PartitionEntry entry)
             break;
         }
     }
-    #pragma endregion
     
     printf("\n");
 }
@@ -138,7 +136,6 @@ void _printType(PartitionEntry entry)
         }
     }
 
-    #pragma endregion
     
     printf("\n");
 }

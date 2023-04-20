@@ -13,7 +13,9 @@ void Reader_init(Reader* self, FILE* filename)
     self->mbr = MBR_new(filename);
     for (int i = 0; i < 4; i++) {
         self->offset = self->mbr->partitionEntry[i].LBAFirstSector * 512;
-        if(self->mbr->partitionEntry[i].type != 0x0c)
+        // Check for file partition type. If it's 0x0c, it's a FAT32 partition
+        // In the new function, passing in 0 as the type makes it a FAT16 partition
+        if(self->mbr->partitionEntry[i].type == 0x0c)
             self->partitions[i] = Partition_new(filename, self->offset, 1);
         else
             self->partitions[i] = Partition_new(filename, self->offset, 0);

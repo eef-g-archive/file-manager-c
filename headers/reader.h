@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "Partition.h"
 #include "MBR.h"
+#include "part.h"
 
 typedef struct Reader
 {
@@ -10,6 +10,7 @@ typedef struct Reader
     MBR* mbr;
     Partition* partitions[4];
 } Reader;
+
 
 Reader* Reader_new(FILE* filename);
 void Reader_init(Reader* self, FILE* filename);

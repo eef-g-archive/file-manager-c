@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 #include <stdint.h>
 #include <inttypes.h>
@@ -119,3 +120,4 @@ void _InitializeDirectoryEntry(DirectoryEntry* self, FILE* file)
     fread(&self->lastWriteDate, 2, 1, file);
     fread(&self->fileSize, 4, 1, file);
 }
+ */

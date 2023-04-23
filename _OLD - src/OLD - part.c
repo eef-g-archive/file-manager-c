@@ -1,3 +1,4 @@
+/*
 #include "../headers/part.h"
 
 Partition* Partition_new(FILE* file, int* offset, int type)
@@ -42,4 +43,4 @@ void Partition_destroy(Partition* self)
 {
     F16P_destroy(self->fat16);
     free(self);
-}
+}*/

@@ -2,15 +2,16 @@
 
 int main(int argc, char* argv[])
 {
-    printf("This is a test");
-    printf("Usage: %s <img file>\n", argv[0]);
     if(argc < 2)
     {
-        printf("No img file specified\n");
+        printf("Usage: %s <disk image>\n", argv[0]);
         return 1;
     }
-    FILE* file = fopen(argv[1], "rb");
-    Reader* reader = Reader_new(file);
-    Reader_print(reader);
+
+    // Convert argv[1] to a char* -- This way we can actually parse the file!
+    char* file = argv[1];
+    ReadDiskImage(file);
+    printf("%s is a valid disk image!\n", file);
+
     return 0;   
 }

@@ -172,6 +172,11 @@ char* PartitionType(uint8_t type)
             return "FAT32 -- LBA";
             break;
         }
+        case 0x0e:
+        {
+            return "FAT16 -- LBA";
+            break;
+        }
         default:
         {
             return "Unknown";

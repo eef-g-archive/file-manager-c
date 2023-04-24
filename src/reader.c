@@ -37,11 +37,11 @@ int ReadDiskImage(char* path)
     {
         if(mbr->partitions[i].partitionType == 0x0e || mbr->partitions[i].partitionType == 0x0c)
         {
-            offset = mbr->partitions[i].sectorOffset * 512;
+            if(offset == 0)
+                offset = mbr->partitions[i].sectorOffset * 512;
             partitions++;
         }
     }
-    printf("Parsed %d partitions.\n", partitions);
 
     if (offset == 0)
     {
@@ -52,7 +52,6 @@ int ReadDiskImage(char* path)
     // Using the offset, parse the boot sector
     // Save the bootsector to a global variable so we can refer to it later (Mainly in the runtime.c file)
     FBoot* boot = ParseFBoot(disk, offset);
-    printf("Boot sector parsed!\n");
     global_fBoot = boot;
     
 
@@ -64,7 +63,9 @@ int ReadDiskImage(char* path)
     int FATOffset = offset + (boot->reservedSectors * sectorSize);
 
     // FAT Table debugging
-    printf("Table Count: %d\nNumber of Sectors: %d\nSector Size: %d\nFAT Offset: %d\n", count, sectors, sectorSize, FATOffset);
+    //printf("Table Count: %d\nNumber of Sectors: %d\nSector Size: %d\nFAT Offset: %d\n", count, sectors, sectorSize, FATOffset);
+    
+    
     // Then, parse the FAT Table
     FTable* fatTable = ParseFTable(disk, FATOffset, count, sectors, sectorSize);
     table = fatTable;
@@ -73,7 +74,6 @@ int ReadDiskImage(char* path)
         printf("Error: Could not parse FAT Table!\n");
         return 1;
     }
-    printf("FAT Table parsed!\n");
 
     // Parse the Root Directory
     // First, find out the offset to the root directory
@@ -89,7 +89,7 @@ int ReadDiskImage(char* path)
     }
     clusterOffset = offsetToRoot + (boot->rootEntries * sizeof(RootEntry));
 
-    printf("Root directory parsed!\n");
+    SummarizeDisk(mbr);
     return 0;
 }
 
@@ -159,11 +159,6 @@ FTable* ParseFTable(FILE* path, uint64_t offset, int count, int sectors, int sec
     int size = count*(sectors * sectorSize);
 
     char* buffer = (char*)malloc(size);
-    if(buffer == NULL)
-    {
-        printf("Error: Could not allocate memory for FAT Table buffer!");
-        return NULL;
-    }
 
     int totalRead = fread(buffer, 1, sizeof(sectorSize), path);
     if(totalRead <= size )
@@ -203,4 +198,47 @@ RootDirectory* ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries)
         return NULL;
     }
     return (RootDirectory*)buffer;
+}
+
+
+/*
+    TODO: 
+    1. Get a Root Entry
+    2. Get a Directory Size ( Can probably do this from the root entry )
+*/
+
+
+
+/*
+----------------------------------------------------
+                Print Functions
+----------------------------------------------------
+*/
+
+// Print the MBR
+void SummarizeDisk(MBR* mbr)
+{
+    printf("-=| File System Information |=-\n");
+    printf("----------------------------------------------\n");
+    printf("| #\t| Name\t| Serial\t| Size\t| Type\t|\n");
+    int validPartition = 1;
+    for(int i = 0; i < 4; i++)
+    {
+        if(mbr->partitions[i].partitionType == 0x0e || mbr->partitions[i].partitionType == 0x0c)
+        {
+            // Get the boot sector for the partition
+            FBoot* boot = ParseFBoot(disk, mbr->partitions[i].sectorOffset * 512);
+
+
+            // Print the FBoot's volume label, serial, size, and type
+            //printf("| %d | %s     %s | %d | %s |\n", validPartition, boot->volumeLabel, boot->driveNumber, boot->logicalSectors, mbr->partitions[i].partitionType);
+            printf("| %d\t", validPartition);
+            printf("| %X\t", boot->volumeLabel);
+            printf("| %X\t", boot->driveNumber);
+            printf("| %s\t", HumanSize(boot->bytesPerSector * boot->sectorsPerFat));
+            printf("| %s |\n", PartitionType(mbr->partitions[i].partitionType));
+            validPartition++;
+        }
+    }
+    printf("----------------------------------------------\n");
 }

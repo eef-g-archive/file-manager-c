@@ -27,77 +27,6 @@ char* HumanSize(uint64_t size)
     return humanSize;
 }
 
-char* MediaType(uint8_t media)
-{
-    switch (media)
-    {
-        case 0xE5:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        case 0xED:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        case 0xF0:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        case 0xF5:
-        {
-            return "Hard Disk";
-            break;
-        }
-        case 0xF8:
-        {
-            return "Hard Disk";
-            break;
-        }
-        case 0xF9:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        case 0xFA:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        case 0xFB:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        case 0xFC:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        case 0xFD:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        case 0xFE:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        case 0xFF:
-        {
-            return "Floppy Disk";
-            break;
-        }
-        default:
-        {
-            return "Unknown";
-            break;
-        }
-    }
-}
 
 char* FileAttributes(uint8_t byte)
 {
@@ -191,4 +120,19 @@ char* VolumeLabel(uint8_t* label)
     memset(volumeLabel, 0, 12);
     memcpy(volumeLabel, label, 11);
     return volumeLabel;
+}
+
+char* DriveLabel(uint8_t* label)
+{
+    char* volumeLabel = (char*)malloc(12);
+    memset(volumeLabel, 0, 12);
+    memcpy(volumeLabel, label, 8);
+    return volumeLabel;
+}
+
+int DriveSerial(uint32_t* serial)
+{
+    int serialNumber = 0;
+    memcpy(&serialNumber, serial, 10);
+    return serialNumber;
 }

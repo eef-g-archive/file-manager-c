@@ -224,17 +224,16 @@ void SummarizeDisk(MBR* mbr)
     int validPartition = 1;
     for(int i = 0; i < 4; i++)
     {
-        if(mbr->partitions[i].partitionType == 0x0e || mbr->partitions[i].partitionType == 0x0c)
+        if(mbr->partitions[i].partitionType == 0x0e)
+        // || mbr->partitions[i].partitionType == 0x0c)
         {
             // Get the boot sector for the partition
             FBoot* boot = ParseFBoot(disk, mbr->partitions[i].sectorOffset * 512);
 
-
-            // Print the FBoot's volume label, serial, size, and type
-            //printf("| %d | %s     %s | %d | %s |\n", validPartition, boot->volumeLabel, boot->driveNumber, boot->logicalSectors, mbr->partitions[i].partitionType);
             printf("| %d\t", validPartition);
-            printf("| %X\t", boot->volumeLabel);
-            printf("| %X\t", boot->driveNumber);
+            printf("| %s\t", DriveLabel(boot->volumeLabel));
+
+            printf("| %d\t", boot->volumeSerialNumber);
             printf("| %s\t", HumanSize(boot->bytesPerSector * boot->sectorsPerFat));
             printf("| %s |\n", PartitionType(mbr->partitions[i].partitionType));
             validPartition++;

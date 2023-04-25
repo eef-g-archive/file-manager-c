@@ -49,7 +49,7 @@ typedef struct _FBoot
     uint8_t driveNumber;
     uint8_t reserved;
     uint8_t extendedBootSignature;
-    uint8_t volumeSerialNumber[4];
+    uint32_t volumeSerialNumber;
     uint8_t volumeLabel[11];
     uint8_t fileSystemType[8];
 

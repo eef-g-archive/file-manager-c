@@ -8,4 +8,5 @@ char* PartitionType(uint8_t type);
 char* VolumeLabel(uint8_t* label);
 char* DriveLabel(uint8_t* label);
 int DriveSerial(uint32_t* serial);
+char* FileName(uint8_t* name, uint8_t* extension);
 #endif

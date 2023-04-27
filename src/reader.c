@@ -58,14 +58,19 @@ int ReadDiskImage(char* path)
     // Parse the FAT Table
     // First, get the info we need from the boot sector
     int count = boot->fatCopies;
-    int sectors = boot->logicalSectors;
+    int sectors = boot->sectorsPerFat;
     int sectorSize = boot->bytesPerSector;
     int FATOffset = offset + (boot->reservedSectors * sectorSize);
 
     // FAT Table debugging
     //printf("Table Count: %d\nNumber of Sectors: %d\nSector Size: %d\nFAT Offset: %d\n", count, sectors, sectorSize, FATOffset);
     
-    
+    printf("FAT Table Calcs:\n");
+    printf("FAT Offset: %d\n", FATOffset);
+    printf("Count: %d\n", count);
+    printf("Sectors: %d\n", sectors);
+    printf("Sector Size: %d\n\n", sectorSize);
+
     // Then, parse the FAT Table
     FTable* fatTable = ParseFTable(disk, FATOffset, count, sectors, sectorSize);
     table = fatTable;
@@ -77,8 +82,14 @@ int ReadDiskImage(char* path)
 
     // Parse the Root Directory
     // First, find out the offset to the root directory
-    int offsetToRoot = FATOffset + (count * sectors * sectorSize);
+    printf("Offset To Root Calcs:\n");
+    printf("FAT Offset: %d\n", FATOffset);
+    printf("Count: %d\n", count);
+    printf("Sectors: %d\n", sectors);
+    printf("Sector Size: %d\n\n", sectorSize);
 
+    int offsetToRoot = FATOffset + (count * sectors * sectorSize);
+    // Should be -- 1314816
     // Then, parse the root directory
     RootDirectory* rootDir = ParseRootDirectory(disk, offsetToRoot, boot->rootEntries);
     global_rootDir = rootDir;
@@ -89,6 +100,10 @@ int ReadDiskImage(char* path)
     }
     clusterOffset = offsetToRoot + (boot->rootEntries * sizeof(RootEntry));
 
+    printf("Offsets: \n");
+    printf("FAT Offset: %d\n", FATOffset);
+    printf("Root Offset: %d\n", offsetToRoot);
+    printf("Cluster Offset: %d\n", clusterOffset);
     SummarizeDisk(mbr);
     return 0;
 }
@@ -156,12 +171,12 @@ FTable* ParseFTable(FILE* path, uint64_t offset, int count, int sectors, int sec
     }
 
     // Calculate the size of the FAT Table
-    int size = count*(sectors * sectorSize);
+    int size = count * (sectors * sectorSize);
 
     char* buffer = (char*)malloc(size);
 
-    int totalRead = fread(buffer, 1, sizeof(sectorSize), path);
-    if(totalRead <= size )
+    int totalRead = fread(buffer, 1, size, path);
+    if(totalRead < size)
     {
         printf("Error: Could not read FAT Table!");
         free(buffer); // Free the buffer if we can't read it -- Avoids a memory leak
@@ -175,7 +190,6 @@ FTable* ParseFTable(FILE* path, uint64_t offset, int count, int sectors, int sec
 RootDirectory* ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries)
 {
     int size = entries * sizeof(RootEntry);
-
     char* buffer = (char*)malloc(size);
     if(buffer == NULL)
     {
@@ -240,4 +254,17 @@ void SummarizeDisk(MBR* mbr)
         }
     }
     printf("----------------------------------------------\n");
+    printf("-=| Root Directory |=-\n");
+    printf("----------------------------------------------\n");
+    printf("| #\t| Name\t| Size\t| Attributes\t|\n");
+    for(int i = 0; i < global_fBoot->rootEntries; i++)
+    {
+        if(global_rootDir->entries[i].name[0] != 0x00 && global_rootDir->entries[i].name[0] != 0xe5)
+        {
+            printf("| %d\t", i);
+            printf("| %s\t", FileName(global_rootDir->entries[i].name, global_rootDir->entries[i].extension));
+            printf("| %s\t", HumanSize(global_rootDir->entries[i].fileSize));
+            printf("| %s\t|\n", FileAttributes(global_rootDir->entries[i].attributes));
+        }
+    }
 }

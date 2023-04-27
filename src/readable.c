@@ -136,3 +136,13 @@ int DriveSerial(uint32_t* serial)
     memcpy(&serialNumber, serial, 10);
     return serialNumber;
 }
+
+char* FileName(uint8_t* name, uint8_t* extension)
+{
+    char* fileName = (char*)malloc(12);
+    memset(fileName, 0, 12);
+    memcpy(fileName, name, 8);
+    strcat(fileName, ".");
+    memcpy(fileName + strlen(fileName), extension, 3);
+    return fileName;
+}

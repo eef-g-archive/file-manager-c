@@ -91,4 +91,5 @@ RootDirectory* ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries)
 
 // Print Functions
 void SummarizeDisk(MBR* mbr);
+
 #endif

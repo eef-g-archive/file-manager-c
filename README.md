@@ -49,6 +49,15 @@ The function calls other functions such as PrintHelp(), ls(), cd(char* path), ca
 
 ### The reader.c file contains the implementation of read functions. 
 
+-The ReadDiskImage(char* path) function reads a disk image from the specified path and parses the MBR, boot sector, and FAT table.<br /> 
+The function then saves the parsed data to global variables so that they can be used later.<br />
+-The ParseMBR(FILE* disk, uint64_t offset) function reads an MBR from the specified disk and returns an MBR struct.<br />
+-The ParseFBoot(FILE* path, uint64_t offset) function reads a boot sector from the specified path and returns a boot sector struct.<br />
+-The ParseFTable(FILE* path, uint64_t offset, int count, int sectors, int sectorSize) function reads a FAT table from the specified path and returns an FTable struct.<br />
+-The ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries) function reads a root directory from the specified path and returns a RootDirectory struct.<br />
+-The SummarizeDisk() function prints out a summary of the disk’s file system information and root directory.<br />
+-The lsPrint() function prints out the contents of the root directory.<br />
+
 ### The runtime.c file contains the implementation of runtime functions. 
 
 ### The Makefile is used for compiling and linking the project.

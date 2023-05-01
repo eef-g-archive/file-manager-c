@@ -1,6 +1,6 @@
 # File Manager in C
 
-This is a file manager that allows you to manage files on your computer.
+This is a file manager that allows you to manage files on your computer. <br />
 It provides an interface for you to view and organize files and folders on your computer.
 
 ## How to use
@@ -10,17 +10,13 @@ To use the file manager in your project, include commands.h, readable.h, reader.
 ## Files included
 
 ### commands.h 
-
 contains the declarations of the functions used in the commands.c file. 
 
 ### readable.h 
-
 contains the declarations of the functions used in the readable.c file. 
 
 ### reader.h
-
-This is a C header file that contains function prototypes and struct definitions. 
-
+This is a C header file that contains function prototypes and struct definitions. <br />
 The header file is used to declare the functions and structs that are defined in the source file.
 
 The header file contains the following:

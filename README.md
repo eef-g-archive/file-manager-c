@@ -19,8 +19,7 @@ contains the declarations of the functions used in the readable.c file.
 This is a C header file that contains function prototypes and struct definitions. <br />
 The header file is used to declare the functions and structs that are defined in the source file.
 
-The header file contains the following:
-
+The header file contains the following:<br />
 -Partition struct definition<br />
 -MBR struct definition<br />
 -FBoot struct definition<br />
@@ -29,8 +28,7 @@ The header file contains the following:
 -RootEntry struct definition<br />
 -RootDirectory struct definition<br />
 
-Function prototypes for:
-
+Function prototypes for:<br />
 -ReadDiskImage(char* path)<br />
 -ParseMBR(FILE* disk, uint64_t offset)<br />
 -ParseFBoot(FILE* disk, uint64_t offset)<br />

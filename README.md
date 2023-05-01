@@ -35,6 +35,10 @@ Function prototypes for:<br />
 -ParseFTable(FILE* path, uint64_t offset)<br />
 
 ### The commands.c file contains the implementation of command functions. 
+-The InputLoop(FILE* disk) function reads user input from the command line and executes the appropriate command. <br />
+The function calls other functions such as PrintHelp(), ls(), cd(char* path), cat(char* path), and stats() depending on the user input.<br />
+-The ls() function prints the contents of the current directory.<br />
+-The cat(char* path) function reads a file from the disk and prints its contents.<br />
 
 ### The readable.c file contains the implementation of read functions. 
 

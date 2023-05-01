@@ -9,9 +9,13 @@ To use the file manager in your project, include commands.h, readable.h, reader.
 
 ## Files included
 
-### The commands.h file contains the declarations of the functions used in the commands.c file. 
+### commands.h 
 
-### The readable.h file contains the declarations of the functions used in the readable.c file. 
+contains the declarations of the functions used in the commands.c file. 
+
+### readable.h 
+
+contains the declarations of the functions used in the readable.c file. 
 
 ### reader.h
 

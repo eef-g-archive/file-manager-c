@@ -41,6 +41,9 @@ The function calls other functions such as PrintHelp(), ls(), cd(char* path), ca
 -The cat(char* path) function reads a file from the disk and prints its contents.<br />
 
 ### The readable.c file contains the implementation of read functions. 
+-The HumanSize(uint64_t size) function takes a size in bytes and returns a human-readable string representation of the size in bytes, kilobytes, megabytes, or gigabytes.<br />
+-The FileAttributes(uint8_t byte) function takes a byte representing file attributes and returns a string representation of the attributes.<br />
+-The PartitionType(uint8_t type) function takes a byte representing partition type and returns a string representation of the partition type.<br />
 
 ### The reader.c file contains the implementation of read functions. 
 

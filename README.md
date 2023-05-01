@@ -25,9 +25,8 @@ The header file is used to declare the functions and structs that are defined in
 
 The header file contains the following:
 
-  Partition struct definition
-
-  MBR struct definition
+-Partition struct definition
+-MBR struct definition
 
   FBoot struct definition
 

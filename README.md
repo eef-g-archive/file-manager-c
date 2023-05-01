@@ -34,20 +34,20 @@ Function prototypes for:<br />
 -ParseFBoot(FILE* disk, uint64_t offset)<br />
 -ParseFTable(FILE* path, uint64_t offset)<br />
 
-### The commands.c file contains the implementation of command functions. 
+### commands.c
 
 -The InputLoop(FILE* disk) function reads user input from the command line and executes the appropriate command. <br />
 The function calls other functions such as PrintHelp(), ls(), cd(char* path), cat(char* path), and stats() depending on the user input.<br />
 -The ls() function prints the contents of the current directory.<br />
 -The cat(char* path) function reads a file from the disk and prints its contents.<br />
 
-### The readable.c file contains the implementation of read functions. 
+### readable.c
 
 -The HumanSize(uint64_t size) function takes a size in bytes and returns a human-readable string representation of the size in bytes, kilobytes, megabytes, or gigabytes.<br />
 -The FileAttributes(uint8_t byte) function takes a byte representing file attributes and returns a string representation of the attributes.<br />
 -The PartitionType(uint8_t type) function takes a byte representing partition type and returns a string representation of the partition type.<br />
 
-### The reader.c file contains the implementation of read functions. 
+### reader.c
 
 -The ReadDiskImage(char* path) function reads a disk image from the specified path and parses the MBR, boot sector, and FAT table.<br /> 
 The function then saves the parsed data to global variables so that they can be used later.<br />
@@ -58,7 +58,7 @@ The function then saves the parsed data to global variables so that they can be 
 -The SummarizeDisk() function prints out a summary of the disk’s file system information and root directory.<br />
 -The lsPrint() function prints out the contents of the root directory.<br />
 
-### The runtime.c file contains the implementation of runtime functions. 
+### runtime.c
 
 ### The Makefile is used for compiling and linking the project.
 

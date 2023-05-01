@@ -23,8 +23,7 @@ This is a C header file that contains function prototypes and struct definitions
 
 The header file is used to declare the functions and structs that are defined in the source file.
 
-The header file contains the following:
-
+#### The header file contains the following:
 Partition struct definition
 
 MBR struct definition

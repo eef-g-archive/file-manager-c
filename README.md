@@ -20,19 +20,19 @@ This is a C header file that contains function prototypes and struct definitions
 The header file is used to declare the functions and structs that are defined in the source file.
 
 The header file contains the following:<br />
--Partition struct definition<br />
--MBR struct definition<br />
--FBoot struct definition<br />
--FATEntry typedef<br />
--FTable struct definition<br />
--RootEntry struct definition<br />
--RootDirectory struct definition<br />
+* Partition struct definition<br />
+* MBR struct definition<br />
+* FBoot struct definition<br />
+* FATEntry typedef<br />
+* FTable struct definition<br />
+* RootEntry struct definition<br />
+* RootDirectory struct definition<br />
 
 Function prototypes for:<br />
--ReadDiskImage(char* path)<br />
--ParseMBR(FILE* disk, uint64_t offset)<br />
--ParseFBoot(FILE* disk, uint64_t offset)<br />
--ParseFTable(FILE* path, uint64_t offset)<br />
+* ReadDiskImage(char* path)<br />
+* ParseMBR(FILE* disk, uint64_t offset)<br />
+* ParseFBoot(FILE* disk, uint64_t offset)<br />
+* ParseFTable(FILE* path, uint64_t offset)<br />
 
 ### commands.c
 
@@ -65,7 +65,7 @@ The function then saves the parsed data to global variables so that they can be 
 ## Compiling and running
 
 To compile and run the project on Linux or macOS:
-*Open a terminal window.
-*Navigate to the directory where your file manager is located.
-*Compile your file manager by running “make”.
-*Run your file manager by running “./file-manager-c”.
+* Open a terminal window.
+* Navigate to the directory where your file manager is located.
+* Compile your file manager by running “make”.
+* Run your file manager by running “./file-manager-c”.

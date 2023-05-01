@@ -25,28 +25,20 @@ The header file is used to declare the functions and structs that are defined in
 
 The header file contains the following:
 
--Partition struct definition
--MBR struct definition
-
-  FBoot struct definition
-
-  FATEntry typedef
-
-  FTable struct definition
-
-  RootEntry struct definition
-
-  RootDirectory struct definition
+-Partition struct definition<br />
+-MBR struct definition<br />
+-FBoot struct definition<br />
+-FATEntry typedef<br />
+-FTable struct definition<br />
+-RootEntry struct definition<br />
+-RootDirectory struct definition<br />
 
 Function prototypes for:
 
-  ReadDiskImage(char* path)
-
-  ParseMBR(FILE* disk, uint64_t offset)
-
-  ParseFBoot(FILE* disk, uint64_t offset)
-
-  ParseFTable(FILE* path, uint64_t offset)
+-ReadDiskImage(char* path)<br />
+-ParseMBR(FILE* disk, uint64_t offset)<br />
+-ParseFBoot(FILE* disk, uint64_t offset)<br />
+-ParseFTable(FILE* path, uint64_t offset)<br />
 
 ### The commands.c file contains the implementation of command functions. 
 

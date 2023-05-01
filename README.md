@@ -13,7 +13,7 @@ To use the file manager in your project, include commands.h, readable.h, reader.
 
 ### The readable.h file contains the declarations of the functions used in the readable.c file. 
 
-### The reader.h file contains the declarations of the functions used in the reader.c file.
+### reader.h
 
 This is a C header file that contains function prototypes and struct definitions. 
 The header file is used to declare the functions and structs that are defined in the source file.

@@ -58,8 +58,8 @@ The function then saves the parsed data to global variables so that they can be 
 * The SummarizeDisk() function prints out a summary of the disk’s file system information and root directory.<br />
 * The lsPrint() function prints out the contents of the root directory.<br />
 
-### runtime.c c
-ontains the main function for the program.
+### runtime.c 
+contains the main function for the program.
 
 ### The Makefile is used for compiling and linking the project.
 

@@ -12,7 +12,9 @@ static uint32_t clusterOffset;
 static _FBoot* global_fBoot;
 static RootDirectory global_rootDir;
 static _MBR* global_mbr;
+
 static int global_partitionOffset;
+static int global_fatOffset;
 
 int ReadDiskImage(char* path)
 {  
@@ -93,6 +95,7 @@ int ReadDiskImage(char* path)
 
     int offsetToRoot = FATOffset + (count * sectors * sectorSize);
     global_partitionOffset = offsetToRoot;
+    global_fatOffset = offsetToRoot;
 
     // Should be -- 1314816
     // Then, parse the root directory
@@ -336,10 +339,8 @@ void PrintDiskList()
 
 void ChangeDirectory(char* path)
 {
-    // Get the root directory
-
-    //_FBoot* boot = ParseFBoot(fatDisk, fatMBR->partitions[i].sectorOffset * 512);
-    RootDirectory root = global_rootDir;//ParseRootDirectory(disk, clusterOffset, global_fBoot->rootEntries)
+    // Get the root directory 
+    RootDirectory root = global_rootDir; 
     
     // Get the directory
     RootEntry* dir = NULL;
@@ -375,32 +376,13 @@ void ChangeDirectory(char* path)
     {
         printf("Error: Directory '%s' does not exist!\n", path);
         return;
-    }
+    }  
 
-
-    // Set up the cluster and change the formula to get to a cluster depending on where we're going
-    // I.E. if we're going to the .. directory, then don't -2 the cluster number
-    uint32_t cluster = 0;
-    if (strcmp("..", path) == 0)
-        cluster = global_partitionOffset + ((dir->startingCluster) * 4 * 512);
+    if (strcmp("..", path) == 0) 
+        clusterOffset = (dir->startingCluster == 0) ? global_fatOffset : 
+        global_partitionOffset + ((dir->startingCluster - 2) * 4 * 512);
     else
-		cluster = global_partitionOffset + ((dir->startingCluster - 2) * 4 * 512);
-
-    
-
-    // Get the directory cluster offset
-    //uint32_t newClusterOffset = cluster * global_fBoot->bytesPerSector * global_fBoot->sectorsPerCluster;
-
-    // Set the global cluster offset
-    clusterOffset = cluster;
-
-
-    global_rootDir = ParseRootDirectory(disk, clusterOffset);
-
-
-    
-    for (int i = 0; i < global_fBoot->rootEntries; i++)
-    {
-
-    }
+        clusterOffset = global_partitionOffset + ((dir->startingCluster - 2) * 4 * 512); 
+     
+    global_rootDir = ParseRootDirectory(disk, clusterOffset);  
 }

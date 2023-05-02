@@ -1,12 +1,12 @@
 ﻿  reader.c
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(119,28): warning C4244: 'function': conversion from 'uint64_t' to 'long', possible loss of data
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(129,21): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(144,28): warning C4244: 'function': conversion from 'uint64_t' to 'long', possible loss of data
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(161,5): warning C4133: 'return': incompatible types - from 'char *' to '_FBoot *'
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(154,21): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(169,28): warning C4244: 'function': conversion from 'uint64_t' to 'long', possible loss of data
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(181,21): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(199,17): warning C4244: 'function': conversion from 'uint64_t' to 'long', possible loss of data
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(284,26): warning C4474: 'printf' : too many arguments passed for format string
-C:\Users\Eef\Documents\GitHub\file-manager-c\FileManager\reader.c(284,26): message : placeholders and their parameters expect 0 variadic arguments, but 1 were provided
-  FileManager.vcxproj -> C:\Users\Eef\Documents\GitHub\file-manager-c\x64\Debug\FileManager.exe
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(122,28): warning C4244: 'function': conversion from 'uint64_t' to 'long', possible loss of data
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(132,21): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(147,28): warning C4244: 'function': conversion from 'uint64_t' to 'long', possible loss of data
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(164,18): warning C4133: 'return': incompatible types - from 'char *' to '_FBoot *'
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(157,21): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(172,28): warning C4244: 'function': conversion from 'uint64_t' to 'long', possible loss of data
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(184,21): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(202,17): warning C4244: 'function': conversion from 'uint64_t' to 'long', possible loss of data
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(287,26): warning C4474: 'printf' : too many arguments passed for format string
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\reader.c(287,26): message : placeholders and their parameters expect 0 variadic arguments, but 1 were provided
+  FileManager.vcxproj -> C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\x64\Debug\FileManager.exe

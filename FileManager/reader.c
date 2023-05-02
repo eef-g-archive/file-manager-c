@@ -365,6 +365,12 @@ void ChangeDirectory(char* path)
     free(global_rootDir); 
     global_rootDir = ParseRootDirectory(disk, clusterOffset, global_fBoot->rootEntries);
 
+
+    for (int i = 0; i < global_fBoot->rootEntries; i++)
+    {
+
+    }
+
     if (global_rootDir == NULL)
     {
         printf("Error: Could not parse root directory!\n");

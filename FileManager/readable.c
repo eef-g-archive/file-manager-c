@@ -153,6 +153,12 @@ int DriveSerial(uint32_t* serial)
     return serialNumber;
 }
 
+
+bool IsDirectory(uint8_t attribute) 
+{
+    return (attribute & 0x10) != 0 ? true : false; 
+}
+
 char* FileName(uint8_t* name, uint8_t* extension)
 {
     char* fileName = (char*)malloc(13 * sizeof(char));
@@ -162,7 +168,33 @@ char* FileName(uint8_t* name, uint8_t* extension)
     }
     memset(fileName, 0, 13);
     memcpy_s(fileName, 9, name, 8);
+
+
     strcat_s(fileName, 13, ".");
     memcpy_s(fileName + strlen(fileName), 4, extension, 3);
+    fileName[12] = '\0';
     return fileName;
+}
+
+char* DirectoryName(uint8_t* name)
+{
+    char* dirName = (char*)malloc(13 * sizeof(char));
+    if (dirName == NULL) {
+        printf("Memory allocation failed.\n");
+        return NULL;
+    }
+    memset(dirName, 0, 13);
+    memcpy_s(dirName, 9, name, 8); 
+
+    int lastIndex = -1;
+    for (int i = 0; i < 8; i++) {
+        if (dirName[i] != ' ') {
+            lastIndex = i;
+        }
+    } 
+    if (lastIndex >= 0) {
+        dirName[lastIndex + 1] = '\0';
+    }
+
+    return dirName;
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <inttypes.h>
 #include "reader.h"
 #include "readable.h"
@@ -13,7 +14,7 @@ static RootDirectory* global_rootDir;
 static _MBR* global_mbr;
 
 int ReadDiskImage(char* path)
-{
+{  
     FILE* file = NULL;
 
     // Open file in binary mode
@@ -27,13 +28,15 @@ int ReadDiskImage(char* path)
     }
 
     // Parse the MBR
-    _MBR* mbr = ParseMBR(disk, 0);
-    if(mbr == NULL)
+
+    _MBR * tMBR = ParseMBR(disk, 0);
+    global_mbr = tMBR;
+
+    if (tMBR == NULL)
     {
         printf("Error: Could not parse MBR!\n");
         return 1;
     }
-    global_mbr = mbr;
 
     // Parse the Boot Sector
     int offset = 0;
@@ -41,10 +44,10 @@ int ReadDiskImage(char* path)
     // Go through each potential partition and then check if it's FAT32 or FAT16 then update the offset of where the boot sector is
     for(int i = 0; i < 4; i++)
     {
-        if(mbr->partitions[i].partitionType == 0x0e || mbr->partitions[i].partitionType == 0x0c)
+        if(global_mbr->partitions[i].partitionType == 0x0e || global_mbr->partitions[i].partitionType == 0x0c)
         {
             if(offset == 0)
-                offset = mbr->partitions[i].sectorOffset * 512;
+                offset = global_mbr->partitions[i].sectorOffset * 512;
             partitions++;
         }
     }
@@ -57,24 +60,24 @@ int ReadDiskImage(char* path)
 
     // Using the offset, parse the boot sector
     // Save the bootsector to a global variable so we can refer to it later (Mainly in the runtime.c file)
-    _FBoot* boot = ParseFBoot(disk, offset);
-    global_fBoot = boot;
+    _FBoot * tBoot = ParseFBoot(disk, offset);
+    global_fBoot = tBoot;
     
 
     // Parse the FAT Table
     // First, get the info we need from the boot sector
-    int count = boot->fatCopies;
-    int sectors = boot->sectorsPerFat;
-    int sectorSize = boot->bytesPerSector;
-    int FATOffset = offset + (boot->reservedSectors * sectorSize);
+    int count = global_fBoot->fatCopies;
+    int sectors = global_fBoot->sectorsPerFat;
+    int sectorSize = global_fBoot->bytesPerSector;
+    int FATOffset = offset + (global_fBoot->reservedSectors * sectorSize);
 
     // FAT Table debugging
     //printf("Table Count: %d\nNumber of Sectors: %d\nSector Size: %d\nFAT Offset: %d\n", count, sectors, sectorSize, FATOffset);
     
     // Then, parse the FAT Table
-    FTable* fatTable = ParseFTable(disk, FATOffset, count, sectors, sectorSize);
-    table = fatTable;
-    if(fatTable == NULL)
+    FTable * tFatTable = ParseFTable(disk, FATOffset, count, sectors, sectorSize);
+    table = tFatTable;
+    if(tFatTable == NULL)
     {
         printf("Error: Could not parse FAT Table!\n");
         return 1;
@@ -86,14 +89,15 @@ int ReadDiskImage(char* path)
     int offsetToRoot = FATOffset + (count * sectors * sectorSize);
     // Should be -- 1314816
     // Then, parse the root directory
-    RootDirectory* rootDir = ParseRootDirectory(disk, offsetToRoot, boot->rootEntries);
-    global_rootDir = rootDir;
-    if(rootDir == NULL)
+    RootDirectory * tRoot = ParseRootDirectory(disk, offsetToRoot, global_fBoot->rootEntries); 
+    global_rootDir = tRoot;
+
+    if(tRoot == NULL)
     {
         printf("Error: Could not parse root directory!\n");
         return 1;
     }
-    clusterOffset = offsetToRoot + (boot->rootEntries * sizeof(RootEntry));
+    clusterOffset = offsetToRoot + (global_fBoot->rootEntries * sizeof(RootEntry));
 
     //SummarizeDisk(_MBR);
     return 0;
@@ -121,7 +125,7 @@ _MBR* ParseMBR(FILE* disk, uint64_t offset)
         return NULL;
     }
 
-    return(_MBR*)buffer; // Convert the bufer to an _MBR struct but ONLY if valid buffer!
+    return (_MBR*)buffer; // Convert the bufer to an _MBR struct but ONLY if valid buffer!
 }
 
 
@@ -146,7 +150,7 @@ _FBoot* ParseFBoot(FILE* path, uint64_t offset)
         return NULL;
     }
 
-    return(_FBoot*)buffer; // Convert the buffer to a boot sector struct but ONLY if valid buffer!
+    return buffer; // Convert the buffer to a boot sector struct but ONLY if valid buffer!
 }
 
 
@@ -202,16 +206,16 @@ RootDirectory* ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries)
         free(buffer); // Free the buffer if we can't read it -- Avoids a memory leak
         return NULL;
     }
+
     return (RootDirectory*)buffer;
-}
+} 
 
 
 /*
     TODO: 
     1. Get a Root Entry
     2. Get a Directory Size ( Can probably do this from the root entry )
-*/
-
+*/ 
 
 
 /*
@@ -232,6 +236,7 @@ void SummarizeDisk()
     {
         if(mbr->partitions[i].partitionType == 0x0e || mbr->partitions[i].partitionType == 0x0c)
         {
+            printf("Start Partition %d\n", i);
             // Get the boot sector for the partition
             _FBoot* boot = ParseFBoot(disk, mbr->partitions[i].sectorOffset * 512);
 
@@ -242,7 +247,9 @@ void SummarizeDisk()
             printf("| %s\t", HumanSize(boot->bytesPerSector * boot->sectorsPerFat));
             printf("| %s |\n", PartitionType(mbr->partitions[i].partitionType));
             validPartition++;
+            printf("\n", i);
         }
+
     }
     printf("----------------------------------------------\n");
     printf("-=| Root Directory |=-\n");
@@ -293,5 +300,74 @@ void PrintDiskList()
                 printf("%s\n", FileName(root->entries[i].name, root->entries[i].extension));
             }
         }
+    }
+}
+
+
+void ChangeDirectory(char* path)
+{
+    // Get the root directory
+
+    //_FBoot* boot = ParseFBoot(fatDisk, fatMBR->partitions[i].sectorOffset * 512);
+    RootDirectory* root = global_rootDir;//ParseRootDirectory(disk, clusterOffset, global_fBoot->rootEntries);
+    if (root == NULL)
+    {
+        printf("Error: Could not parse root directory!\n");
+        return;
+    }
+
+    // Get the directory
+    RootEntry* dir = NULL;
+    for (int i = 0; i < global_fBoot->rootEntries; i++)
+    {
+        RootEntry curr = root->entries[i];
+        if (curr.name[0] == 0x00)
+            continue;
+
+        else if (curr.name[0] == 0xE5)
+            continue;
+
+        else if (curr.attributes == 0x0F)
+            continue; 
+        else
+        { 
+
+            char* fileName;
+
+            if (IsDirectory(curr.attributes)) fileName = DirectoryName(curr.name);
+            else fileName = FileName(root->entries[i].name, root->entries[i].extension);
+
+            if (strcmp(path, fileName) == 0)
+            {
+                dir = &root->entries[i];
+                break;
+            }
+        }
+    }
+
+    // Check if the directory exists
+    if (dir == NULL)
+    {
+        printf("Error: Directory '%s' does not exist!\n", path);
+        return;
+    }
+
+    // Get the directory cluster
+    uint32_t cluster = dir->startingCluster;
+
+    // Get the directory cluster offset
+    uint32_t newClusterOffset = cluster * global_fBoot->bytesPerSector * global_fBoot->sectorsPerCluster;
+
+    // Set the global cluster offset
+    clusterOffset = newClusterOffset;
+
+
+    free(global_rootDir); 
+    global_rootDir = ParseRootDirectory(disk, clusterOffset, global_fBoot->rootEntries);
+
+    if (global_rootDir == NULL)
+    {
+        printf("Error: Could not parse root directory!\n");
+        return;
     }
 }

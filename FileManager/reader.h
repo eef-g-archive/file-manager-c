@@ -93,10 +93,10 @@ int ReadDiskImage(char* path);
 _MBR* ParseMBR(FILE* disk, uint64_t offset);
 _FBoot* ParseFBoot(FILE* disk, uint64_t offset);
 FTable* ParseFTable(FILE* path, uint64_t offset, int count, int sectors, int sectorSize);
-RootDirectory* ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries);
-
+RootDirectory* ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries); 
 
 // Print Functions
 void SummarizeDisk();
 void PrintDiskList(); // Currently only working with root directory 
+void ChangeDirectory(char* path);
 #endif

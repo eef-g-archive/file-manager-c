@@ -5,7 +5,14 @@
 #include "reader.h"
 #include "readable.h"
  
-#define BufferSize 256  
+#define BufferSize 256   
+
+static FILE* fatDisk;
+static FTable* fatTable;
+static uint32_t fatClusterOffset;
+static _FBoot* fatBoot;
+static RootDirectory* fatRootDir;
+static _MBR* fatMBR;
 
 typedef struct
 {
@@ -14,17 +21,12 @@ typedef struct
     int argsCount;
 } Command;
 
-extern const Command Commands[];
-
-static FILE* global_disk;
-static uint32_t global_clusterOffset;
-static _FBoot* global_fBoot;
-
+extern const Command Commands[];  
  
 void List();
 void stats();
-void ChangeDirectory(char* path);
-void Concatenate(char* path);
 
-extern void InitializeFileManager(char* disk);
-extern int MainLoop();
+void ChangeDirectoryCommand(int argc, char* argv[]);
+
+void Concatenate(char* path);
+ 

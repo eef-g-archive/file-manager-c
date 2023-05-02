@@ -10,8 +10,9 @@ static FILE* disk;
 static FTable* table;
 static uint32_t clusterOffset;
 static _FBoot* global_fBoot;
-static RootDirectory* global_rootDir;
+static RootDirectory global_rootDir;
 static _MBR* global_mbr;
+static int global_partitionOffset;
 
 int ReadDiskImage(char* path)
 {  
@@ -41,13 +42,17 @@ int ReadDiskImage(char* path)
     // Parse the Boot Sector
     int offset = 0;
     int partitions = 0;
+    global_partitionOffset = 0;
     // Go through each potential partition and then check if it's FAT32 or FAT16 then update the offset of where the boot sector is
     for(int i = 0; i < 4; i++)
     {
         if(global_mbr->partitions[i].partitionType == 0x0e || global_mbr->partitions[i].partitionType == 0x0c)
         {
-            if(offset == 0)
+            if (offset == 0)
+            {
                 offset = global_mbr->partitions[i].sectorOffset * 512;
+            }
+                
             partitions++;
         }
     }
@@ -87,10 +92,13 @@ int ReadDiskImage(char* path)
     // First, find out the offset to the root directory
 
     int offsetToRoot = FATOffset + (count * sectors * sectorSize);
+    global_partitionOffset = offsetToRoot;
+
     // Should be -- 1314816
     // Then, parse the root directory
-    RootDirectory * tRoot = ParseRootDirectory(disk, offsetToRoot, global_fBoot->rootEntries); 
-    global_rootDir = tRoot;
+    RootDirectory tempRoot = ParseRootDirectory(disk, offsetToRoot); 
+    RootDirectory* tRoot = &tempRoot;
+    global_rootDir = tempRoot;
 
     if(tRoot == NULL)
     {
@@ -98,7 +106,7 @@ int ReadDiskImage(char* path)
         return 1;
     }
     clusterOffset = offsetToRoot + (global_fBoot->rootEntries * sizeof(RootEntry));
-
+    global_partitionOffset = clusterOffset;
     //SummarizeDisk(_MBR);
     return 0;
 }
@@ -182,8 +190,33 @@ FTable* ParseFTable(FILE* path, uint64_t offset, int count, int sectors, int sec
 
 
 // Root Directory Parsing --------------------------------------------------------------------------------------------------
-RootDirectory* ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries)
+RootDirectory ParseRootDirectory(FILE* path, uint64_t offset)
 {
+    RootDirectory dir;
+    int idx = 0;
+    RootEntry tmp;
+    dir.entries = malloc(sizeof(RootEntry) * 512);
+    fseek(path, offset, SEEK_SET);
+    while (true)
+    {
+        fread(&tmp, sizeof(RootEntry), 1, path);
+        if (tmp.name[0] != 0x00)
+        {
+            if (tmp.name[0] != 0xE5)
+            {
+                // Now actually parse the Root Entry
+                memcpy(&dir.entries[idx], &tmp, sizeof(RootEntry));
+                idx++;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+    dir.numberEntries = idx;
+    return dir;
+    /*
     int size = entries * sizeof(RootEntry);
     char* buffer = (char*)malloc(size);
     if(buffer == NULL)
@@ -208,6 +241,7 @@ RootDirectory* ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries)
     }
 
     return (RootDirectory*)buffer;
+    */
 } 
 
 
@@ -257,12 +291,12 @@ void SummarizeDisk()
     printf("| #\t| Name\t| Size\t| Attributes\t|\n");
     for(int i = 0; i < global_fBoot->rootEntries; i++)
     {
-        if(global_rootDir->entries[i].name[0] != 0x00 && global_rootDir->entries[i].name[0] != 0xe5)
+        if(global_rootDir.entries[i].name[0] != 0x00 && global_rootDir.entries[i].name[0] != 0xe5)
         {
             printf("| %d\t", i);
-            printf("| %s\t", FileName(global_rootDir->entries[i].name, global_rootDir->entries[i].extension));
-            printf("| %s\t", HumanSize(global_rootDir->entries[i].fileSize));
-            printf("| %s\t|\n", FileAttributes(global_rootDir->entries[i].attributes));
+            printf("| %s\t", FileName(global_rootDir.entries[i].name, global_rootDir.entries[i].extension));
+            printf("| %s\t", HumanSize(global_rootDir.entries[i].fileSize));
+            printf("| %s\t|\n", FileAttributes(global_rootDir.entries[i].attributes));
         }
     }
 }
@@ -270,34 +304,30 @@ void SummarizeDisk()
 
 void PrintDiskList()
 {
-    RootDirectory* root = global_rootDir;
-    for(int i = 0; i < global_fBoot->rootEntries; i++)
+    RootDirectory root = global_rootDir;
+    for(int i = 0; i < root.numberEntries; i++)
     {
-        if(root->entries[i].name[0] == 0x00)
+        if(root.entries[i].attributes == 0x0F)
         {
             continue;
         }
-        else if(root->entries[i].name[0] == 0xE5)
+        else if (root.entries[i].attributes == 0x08)
         {
             continue;
         }
-        else if(root->entries[i].attributes == 0x0F)
+        else if (IsDirectory(root.entries[i].attributes))
         {
-            continue;
-        }
-        else if (root->entries[i].attributes == 0x08)
-        {
-            continue;
+            printf("%s\n", DirectoryName(root.entries[i].name));
         }
         else
         {
-            if(root->entries[i].attributes == 0x10)
+            if(root.entries[i].attributes == 0x10)
             {
-                printf("%s\n", FileName(root->entries[i].name, root->entries[i].extension));
+                printf("%s\n", FileName(root.entries[i].name, root.entries[i].extension));
             }
             else
             {
-                printf("%s\n", FileName(root->entries[i].name, root->entries[i].extension));
+                printf("%s\n", FileName(root.entries[i].name, root.entries[i].extension));
             }
         }
     }
@@ -309,18 +339,13 @@ void ChangeDirectory(char* path)
     // Get the root directory
 
     //_FBoot* boot = ParseFBoot(fatDisk, fatMBR->partitions[i].sectorOffset * 512);
-    RootDirectory* root = global_rootDir;//ParseRootDirectory(disk, clusterOffset, global_fBoot->rootEntries);
-    if (root == NULL)
-    {
-        printf("Error: Could not parse root directory!\n");
-        return;
-    }
-
+    RootDirectory root = global_rootDir;//ParseRootDirectory(disk, clusterOffset, global_fBoot->rootEntries)
+    
     // Get the directory
     RootEntry* dir = NULL;
     for (int i = 0; i < global_fBoot->rootEntries; i++)
     {
-        RootEntry curr = root->entries[i];
+        RootEntry curr = root.entries[i];
         if (curr.name[0] == 0x00)
             continue;
 
@@ -335,11 +360,11 @@ void ChangeDirectory(char* path)
             char* fileName;
 
             if (IsDirectory(curr.attributes)) fileName = DirectoryName(curr.name);
-            else fileName = FileName(root->entries[i].name, root->entries[i].extension);
+            else fileName = FileName(root.entries[i].name, root.entries[i].extension);
 
             if (strcmp(path, fileName) == 0)
             {
-                dir = &root->entries[i];
+                dir = &root.entries[i];
                 break;
             }
         }
@@ -352,28 +377,30 @@ void ChangeDirectory(char* path)
         return;
     }
 
-    // Get the directory cluster
-    uint32_t cluster = dir->startingCluster;
+
+    // Set up the cluster and change the formula to get to a cluster depending on where we're going
+    // I.E. if we're going to the .. directory, then don't -2 the cluster number
+    uint32_t cluster = 0;
+    if (strcmp("..", path) == 0)
+        cluster = global_partitionOffset + ((dir->startingCluster) * 4 * 512);
+    else
+		cluster = global_partitionOffset + ((dir->startingCluster - 2) * 4 * 512);
+
+    
 
     // Get the directory cluster offset
-    uint32_t newClusterOffset = cluster * global_fBoot->bytesPerSector * global_fBoot->sectorsPerCluster;
+    //uint32_t newClusterOffset = cluster * global_fBoot->bytesPerSector * global_fBoot->sectorsPerCluster;
 
     // Set the global cluster offset
-    clusterOffset = newClusterOffset;
+    clusterOffset = cluster;
 
 
-    free(global_rootDir); 
-    global_rootDir = ParseRootDirectory(disk, clusterOffset, global_fBoot->rootEntries);
+    global_rootDir = ParseRootDirectory(disk, clusterOffset);
 
 
+    
     for (int i = 0; i < global_fBoot->rootEntries; i++)
     {
 
-    }
-
-    if (global_rootDir == NULL)
-    {
-        printf("Error: Could not parse root directory!\n");
-        return;
     }
 }

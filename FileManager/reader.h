@@ -83,17 +83,18 @@ PACK(typedef struct RootEntry
     uint32_t fileSize;
 } RootEntry);
 
-PACK (typedef struct RootDirectory
+typedef struct RootDirectory
 {
-    RootEntry entries[0]; // Don't know how many entries we'll have until we parse the disk
-} RootDirectory);
+    RootEntry* entries; // Don't know how many entries we'll have until we parse the disk
+    size_t numberEntries;
+} RootDirectory;
 
 // Functions
 int ReadDiskImage(char* path);
 _MBR* ParseMBR(FILE* disk, uint64_t offset);
 _FBoot* ParseFBoot(FILE* disk, uint64_t offset);
 FTable* ParseFTable(FILE* path, uint64_t offset, int count, int sectors, int sectorSize);
-RootDirectory* ParseRootDirectory(FILE* path, uint64_t offset, uint16_t entries); 
+RootDirectory ParseRootDirectory(FILE* path, uint64_t offset); 
 
 // Print Functions
 void SummarizeDisk();

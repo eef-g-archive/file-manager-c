@@ -11,34 +11,29 @@ void List()
 void Concatenate(char* path)
 {
     // Get the root directory
-    RootDirectory* root = ParseRootDirectory(fatDisk, fatClusterOffset, fatBoot->rootEntries);
-    if(root == NULL)
-    {
-        printf("Error: Could not parse root directory!\n");
-        return;
-    }
+    RootDirectory root = ParseRootDirectory(fatDisk, fatClusterOffset, fatBoot->rootEntries);
 
     // Get the file
     RootEntry* file = NULL;
     for(int i = 0; i < fatBoot->rootEntries; i++)
     {
-        if(root->entries[i].name[0] == 0x00)
+        if(root.entries[i].name[0] == 0x00)
         {
             continue;
         }
-        else if(root->entries[i].name[0] == 0xE5)
+        else if(root.entries[i].name[0] == 0xE5)
         {
             continue;
         }
-        else if(root->entries[i].attributes == 0x0F)
+        else if(root.entries[i].attributes == 0x0F)
         {
             continue;
         }
         else
         {
-            if(strcmp(path, FileName(root->entries[i].name, root->entries[i].extension)) == 0)
+            if(strcmp(path, FileName(root.entries[i].name, root.entries[i].extension)) == 0)
             {
-                file = &root->entries[i];
+                file = &root.entries[i];
                 break;
             }
         }

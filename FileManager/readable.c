@@ -166,12 +166,22 @@ char* FileName(uint8_t* name, uint8_t* extension)
         printf("Memory allocation failed.\n");
         return NULL;
     }
-    memset(fileName, 0, 13);
-    memcpy_s(fileName, 9, name, 8);
-
+    //memset(fileName, 0, 13);
+    //memcpy_s(fileName, 9, name, 8);
+    strcpy_s(fileName, 13, DirectoryName(name));
 
     strcat_s(fileName, 13, ".");
-    memcpy_s(fileName + strlen(fileName), 4, extension, 3);
+    int strLength = strnlen_s(fileName, 8);
+    for (int i = 0; i < 4; i++)
+    {
+        if ((char)extension[i] == ' ')
+        {
+            if (i == 0) return fileName;
+            fileName[i + strLength] = '\0';
+            return fileName;
+        }
+        else fileName[i + strLength] = extension[i];
+    }
     fileName[12] = '\0';
     return fileName;
 }

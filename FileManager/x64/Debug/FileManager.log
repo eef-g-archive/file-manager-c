@@ -1,0 +1,9 @@
+﻿  commands.c
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\commands.c(147,5): warning C4113: 'void (__cdecl *)()' differs in parameter lists from 'void (__cdecl *)(int,char **)'
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\commands.c(148,5): warning C4113: 'void (__cdecl *)()' differs in parameter lists from 'void (__cdecl *)(int,char **)'
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\commands.c(149,5): warning C4113: 'void (__cdecl *)(char *)' differs in parameter lists from 'void (__cdecl *)(int,char **)'
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\commands.c(150,5): warning C4113: 'void (__cdecl *)(char *)' differs in parameter lists from 'void (__cdecl *)(int,char **)'
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\commands.c(192,23): warning C4133: '=': incompatible types - from 'char *' to 'FILE *'
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\commands.c(217,44): warning C4047: 'function': 'const char *' differs in levels of indirection from 'char **'
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\commands.c(217,33): warning C4024: 'strtok': different types for formal and actual parameter 2
+C:\Users\Brian\OneDrive\Documents\GitHub\DISCORD IP LOGGER\file-manager-c\FileManager\commands.c(217,19): error C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.

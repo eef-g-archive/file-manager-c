@@ -8,69 +8,19 @@ void List()
     PrintDiskList();
 }
 
-void Concatenate(char* path)
+void Concatenate(int argc, char* argv[])
 {
-    // Get the root directory
-    RootDirectory root = ParseRootDirectory(fatDisk, fatClusterOffset, fatBoot->rootEntries);
+    // Prep the argument for the command
+    char* path = argv[1];
 
-    // Get the file
-    RootEntry* file = NULL;
-    for(int i = 0; i < fatBoot->rootEntries; i++)
-    {
-        if(root.entries[i].name[0] == 0x00)
-        {
-            continue;
-        }
-        else if(root.entries[i].name[0] == 0xE5)
-        {
-            continue;
-        }
-        else if(root.entries[i].attributes == 0x0F)
-        {
-            continue;
-        }
-        else
-        {
-            if(strcmp(path, FileName(root.entries[i].name, root.entries[i].extension)) == 0)
-            {
-                file = &root.entries[i];
-                break;
-            }
-        }
-    }
+    char* pass = malloc(BufferSize);
+    size_t len = strlen(path);
+    strncpy_s(pass, BufferSize, path, len);
 
-    // Check if the file exists
-    if(file == NULL)
-    {
-        printf("Error: File '%s' does not exist!\n", path);
-        return;
-    }
-
-    // Get the file size
-    uint32_t fileSize = file->fileSize;
-
-    // Get the file cluster
-    uint32_t cluster = file->startingCluster;
-
-    // Get the file cluster count
-    uint32_t clusterCount = fileSize / (fatBoot->bytesPerSector * fatBoot->sectorsPerCluster);
-
-    // Get the file cluster offset
-    uint32_t clusterOffset = cluster * fatBoot->bytesPerSector * fatBoot->sectorsPerCluster;
-
-    // Get the file cluster remainder
-    uint32_t clusterRemainder = fileSize % (fatBoot->bytesPerSector * fatBoot->sectorsPerCluster);
-
-    // Get the file cluster remainder offset
-    uint32_t clusterRemainderOffset = clusterOffset + (clusterCount * fatBoot->bytesPerSector * fatBoot->sectorsPerCluster);
-
-    // Get the file cluster remainder count
-    uint32_t clusterRemainderCount = clusterRemainder / fatBoot->bytesPerSector;
-
-    // Get the file cluster remainder remainder
-    uint32_t clusterRemainderRemainder = clusterRemainder % fatBoot->bytesPerSector;
+    // Send the file name to the command
+    uint8_t* fileData = ReadFile(pass);
+    printf("%x\n", fileData);
 }
-
 
 
 

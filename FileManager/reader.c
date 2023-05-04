@@ -249,13 +249,6 @@ RootDirectory ParseRootDirectory(FILE* path, uint64_t offset)
 
 
 /*
-    TODO: 
-    1. Get a Root Entry
-    2. Get a Directory Size ( Can probably do this from the root entry )
-*/ 
-
-
-/*
 ----------------------------------------------------
                 Print Functions
 ----------------------------------------------------
@@ -386,3 +379,86 @@ void ChangeDirectory(char* path)
      
     global_rootDir = ParseRootDirectory(disk, clusterOffset);  
 }
+
+
+void ReadFile(char* path)
+{
+    // Usually we'd want these const variables to be switched depending on the disk type
+    // But we're only working with FAT16 so I just hard coded them -- Ethan
+   const size_t endChar = 0x0FFF;
+   const size_t entrySize = 4;
+   RootDirectory root = global_rootDir;
+   RootEntry* file = NULL;
+   // Get the root entry of the file so we can parse it
+   for (int i = 0; i < root.numberEntries; i++)
+   {
+       // First we want to make sure we're trying not to cat a directory
+       if (!IsDirectory(root.entries[i].attributes))
+       {
+           if (strcmp(FileName(root.entries[i].name, root.entries[i].extension), path) == 0)
+           {
+               file = &root.entries[i];
+               break;
+           }
+       }
+   }
+   if (file == NULL)
+   {
+       printf("Error: '%s' was not found!\n", path);
+       return;
+   }
+    
+   // Now we have the file information and can parse it
+   size_t clusterMaxLength = file->fileSize / (global_fBoot->bytesPerSector * global_fBoot->sectorsPerCluster);
+   
+   uint32_t* clusters = malloc((clusterMaxLength + 1) * sizeof(uint32_t));
+   clusters[0] = file->startingCluster;
+
+   // Start to parse the clusters of the file
+   if (clusterMaxLength > 0)
+   {
+       uint32_t nextCluster = 0;
+       size_t index = 1;
+	   if (fseek(disk, global_fatOffset + file->startingCluster * entrySize, SEEK_SET) != 0)
+	   {
+		   printf("Error! Could not seek to the cluster.\n");
+		   return;
+	   }
+
+       while (true)
+       {
+           fread(&nextCluster, entrySize, 1, disk);
+           fseek(disk, global_fatOffset + nextCluster * entrySize, SEEK_SET);
+           if (nextCluster >= endChar) break;
+           clusters[index] = nextCluster;
+           index++;
+       }
+   }
+
+   // Allocate memory for the file
+   uint8_t* data = calloc(1, file->fileSize + 1);
+   const size_t clusterSize = global_fBoot->bytesPerSector * global_fBoot->sectorsPerCluster;
+
+   size_t currentByteOffset = 0;
+   // Go through the clusters and read the current cluster into the data starting at the current byte offset
+   for (size_t i = 0; i < clusterMaxLength; i++)
+   {
+       fseek(disk, clusters[i], SEEK_SET);
+       if (i == clusterMaxLength)
+       {
+           // If we're at the end, only read the remainder of the file, not the whole cluster
+           fread(&data[currentByteOffset], file->fileSize % clusterSize, 1, disk);
+           break;
+       }
+       // Otherwise, read the entire cluster into the data
+       fread(&data[currentByteOffset], clusterSize, 1, disk);
+       currentByteOffset += clusterSize;
+   }
+   // Set the very end of the data to be 0, this should end the file when printing it
+   data[file->fileSize] = 0;
+   free(clusters);
+
+   return data;
+
+}
+
